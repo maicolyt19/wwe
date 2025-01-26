@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Localiza números de celulares de República Dominicana de forma sencilla y rápida.">
+    <title>Localizador de Números | RD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900">
+    <header class="bg-blue-600 text-white py-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center px-4">
+            <h1 class="text-2xl font-bold">Localizador RD</h1>
+            <nav>
+                <a href="#" class="text-white hover:underline px-3">Inicio</a>
+                <a href="#" class="text-white hover:underline px-3">Acerca</a>
+                <a href="#" class="text-white hover:underline px-3">Contacto</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto mt-10 px-4">
+        <section class="bg-white shadow-lg rounded-lg p-6">
+            <h2 class="text-xl font-bold mb-4">Localiza un número de celular</h2>
+            <form id="locatorForm" class="space-y-4">
+                <div>
+                    <label for="phone" class="block text-sm font-medium">Número de celular</label>
+                    <input 
+                        type="text" 
+                        id="phone" 
+                        name="phone" 
+                        placeholder="Ejemplo: 8091234567" 
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600">
+                </div>
+                <button 
+                    type="submit" 
+                    class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700">
+                    Localizar
+                </button>
+            </form>
+        </section>
+
+        <section id="results" class="mt-10 hidden">
+            <div class="bg-white shadow-lg rounded-lg p-6">
+                <h3 class="text-lg font-bold mb-4">Resultados</h3>
+                <p id="resultText" class="text-gray-700">Aquí aparecerán los detalles del número.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-4 mt-10">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2025 Localizador RD. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        const form = document.getElementById('locatorForm');
+        const resultsSection = document.getElementById('results');
+        const resultText = document.getElementById('resultText');
+
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const phone = document.getElementById('phone').value;
+
+            if (phone.match(/^\d{10}$/)) {
+                try {
+                    const response = await fetch(`https://api.numverify.com/validate?access_key=2d77491f2e41441a138bf9871f14c9eb&number=${phone}&country_code=DO`);
+                    const data = await response.json();
+
+                    if (data.valid) {
+                        resultsSection.classList.remove('hidden');
+                        resultText.textContent = `Número válido. Ubicación aproximada: ${data.location || 'No disponible'}`;
+                    } else {
+                        resultsSection.classList.remove('hidden');
+                        resultText.textContent = 'Número inválido o no se encontró información.';
+                    }
+                } catch (error) {
+                    resultsSection.classList.remove('hidden');
+                    resultText.textContent = 'Error al conectar con el servicio de localización.';
+                }
+            } else {
+                resultsSection.classList.remove('hidden');
+                resultText.textContent = 'Por favor, introduce un número válido de 10 dígitos.';
+            }
+        });
+    </script>
+</body>
+</html>
